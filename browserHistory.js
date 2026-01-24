@@ -1,25 +1,25 @@
 class BrowserHistory {
-    constructor() {
-        this.history = [];
-        this.index = -1;
-    }
+  constructor() {
+    this.history = [];
+    this.index = 0;
+  }
 
-    visit(url) {
-        this.history[++this.index] = url;
-        this.history.length = this.index + 1;
-    }
+  visit(url) {
+    this.history[this.index] = url;
+    this.index = this.index + 1;
+  }
 
-    current() {
-        return this.history[this.index];
-    }
+  current() {
+    return this.history[this.index - 1];
+  }
 
-    backward() {
-        this.index = Math.max(0, --this.index)
-    }
+  forward() {
+    this.index = Math.min(this.history.length, ++this.index);
+  }
 
-    forward() {
-        this.index = Math.min(this.history.length + 1, ++this.index)
-    }
+  backward() {
+    this.index = Math.max(0, --this.index);
+  }
 }
 
 const bh = new BrowserHistory();
