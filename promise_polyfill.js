@@ -81,3 +81,28 @@ const myPromiseAny = (promiseList) => {
 myPromiseAny(promiseList)
   .then((res) => console.log(res))
   .catch((e) => console.log(e));
+
+
+const myPromiseAllSettled = (promiseList) => {
+  if (!promiseList.length) return;
+  let result = [];
+  let count = 0;
+
+  return new Promise((resolve, reject) => {
+    for (let i = 0; i < promiseList.length; i++) {
+      Promise.resolve(task)
+        .then((res) => {
+          result[i] = { status: "fulfilled", value: res };
+        })
+        .catch((e) => {
+          result[i] = { status: "failed", value: e };
+        })
+        .finally(() => {
+          count++;
+          if (count === promiseList.length) {
+            resolve(result);
+          }
+        });
+    }
+  });
+};
