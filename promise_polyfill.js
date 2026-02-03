@@ -9,7 +9,7 @@ const promiseList = [
 
 // Promise.all
 const myPromiseAll = (promiseList) => {
-    if(!promiseList.length) return;
+    if(!promiseList.length) return new Promise(resolve => resolve([]));
     let count = 0;
     let result = [];
 

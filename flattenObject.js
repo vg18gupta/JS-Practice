@@ -22,14 +22,14 @@ const flattenObject = (obj, prefix = '', result = {}) => {
     for (let key in obj) {
         if (obj.hasOwnProperty(key)) {
             const newKey = prefix ? `${prefix}_${key}` : key;
-            if(typeof obj === 'object') {
-                flattenObject(obj[key], newKey, result);
-            } else if(Array.isArray(obj[key])) {
-                obj[key].forEach((item, index) => {
-                    flattenObject(item, `${newKey}.${index}`, result)
-                })
+            if (Array.isArray(obj[key])) { // fix: check array first
+              (obj[key] || []).forEach((item, index) => {
+                squashObject(item, `${newKey}.${index}`, result);
+              });
+            } else if (obj[key] && typeof obj[key] === 'object') { // fix else if syntax
+              squashObject(obj[key], newKey, result);
             } else {
-                result[newKey] = obj[key];
+              result[newKey] = obj[key]; // fix: use newKey instead of key
             }
         }
     }
