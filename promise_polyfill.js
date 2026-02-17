@@ -14,10 +14,10 @@ const myPromiseAll = (promiseList) => {
     let result = [];
 
     return new Promise((resolve, reject) => {
-        for (let task of promiseList) {
+        promiseList.forEach((task, index) => {
             Promise.resolve(task)
                 .then((val) => {
-                    result.push(val);
+                    result[index] = val;
                     count++;
                     if(count === promiseList.length) {
                         resolve(result);
@@ -26,7 +26,7 @@ const myPromiseAll = (promiseList) => {
                 .catch((e) => {
                     reject(e)
                 })
-        }
+        })
     })
 };
 

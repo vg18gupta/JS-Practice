@@ -24,10 +24,10 @@ const flattenObject = (obj, prefix = '', result = {}) => {
             const newKey = prefix ? `${prefix}_${key}` : key;
             if (Array.isArray(obj[key])) { // fix: check array first
               (obj[key] || []).forEach((item, index) => {
-                squashObject(item, `${newKey}.${index}`, result);
+                flattenObject(item, `${newKey}.${index}`, result);
               });
             } else if (obj[key] && typeof obj[key] === 'object') { // fix else if syntax
-              squashObject(obj[key], newKey, result);
+              flattenObject(obj[key], newKey, result);
             } else {
               result[newKey] = obj[key]; // fix: use newKey instead of key
             }

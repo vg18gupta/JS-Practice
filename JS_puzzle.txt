@@ -1,0 +1,256 @@
+1. What gets logged?
+javascriptconsole.log(typeof typeof 1);
+// Answer: "string"
+typeof 1 returns "number" (a string), then typeof "number" returns "string".
+
+2. Array comparison
+javascriptconsole.log([] == ![]);
+// Answer: true
+![] is false (arrays are truthy). Then [] == false converts both: empty array becomes "", false becomes 0, empty string becomes 0, so 0 == 0 is true.
+
+3. Addition mystery
+javascriptconsole.log(1 + "2" + "2");     // "122" - left to right, 1+"2" = "12", "12"+"2" = "122"
+console.log(1 + +"2" + "2");    // "32" - unary + converts "2" to 2, so 1+2=3, 3+"2"="32"
+console.log(1 + -"1" + "2");    // "02" - unary - converts "1" to -1, so 1+-1=0, 0+"2"="02"
+console.log(+"1" + "1" + "2");  // "112" - +"1" = 1, 1+"1"="11", "11"+"2"="112"
+
+4. Function hoisting
+javascript// Logs: undefined, then 2
+The var x = 2 declaration is hoisted to the top of the function scope but not the assignment, so first console.log sees undefined.
+
+5. Tricky truthiness
+javascriptconsole.log([] + []);    // "" - both arrays convert to empty strings
+console.log([] + {});    // "[object Object]" - [] becomes "", {} becomes "[object Object]"
+console.log({} + []);    // "[object Object]" - same as above
+console.log({} + {});    // "[object Object][object Object]" - both convert to "[object Object]"
+Note: In some contexts like the browser console, {} + [] might be 0 because {} is treated as a code block!
+
+6. The setTimeout classic
+javascript// Logs: 3, 3, 3
+var has function scope, not block scope. By the time the timeouts execute, the loop has finished and i is 3. Fix with let instead of var.
+
+7. Arrow function context
+javascript// Logs: "Hello, undefined"
+Arrow functions don't have their own this, they inherit from the enclosing scope. Here, this is probably the global object where name is undefined.
+
+8. NaN weirdness
+javascriptconsole.log(NaN === NaN);        // false - NaN is never equal to itself
+console.log(Object.is(NaN, NaN)); // true - Object.is() correctly identifies NaN
+Use Number.isNaN() or Object.is() to check for NaN!
+How did you do? Any particular ones that surprised you?give some more include async promise hoisting temporal dead zone give me answer as well16:10Here are more advanced JavaScript puzzles covering async, promises, hoisting, and temporal dead zone:
+
+9. Promise execution order
+javascriptconsole.log('1');
+setTimeout(() => console.log('2'), 0);
+Promise.resolve().then(() => console.log('3'));
+console.log('4');
+// Answer: 1, 4, 3, 2
+// Explanation: Synchronous code runs first (1, 4), then microtasks/promises (3), then macrotasks/setTimeout (2)
+
+10. Async/await with promises
+javascriptasync function foo() {
+  console.log('1');
+  await Promise.resolve();
+  console.log('2');
+}
+console.log('3');
+foo();
+console.log('4');
+// Answer: 3, 1, 4, 2
+// Explanation: Sync code (3), foo starts (1), await yields (4 runs), then microtask (2)
+
+11. Promise chain gotcha
+javascriptPromise.resolve(1)
+  .then(x => x + 1)
+  .then(x => { x + 1 })
+  .then(x => console.log(x));
+// Answer: undefined
+// Explanation: Second .then has no return statement, so it returns undefined
+
+12. Temporal Dead Zone (TDZ)
+javascriptfunction test() {
+  console.log(a);
+  console.log(b);
+  var a = 1;
+  let b = 2;
+}
+test();
+// Answer: undefined, then ReferenceError
+// Explanation: var is hoisted (undefined), let is in TDZ until declaration
+
+13. More TDZ
+javascriptlet x = x + 1;
+// Answer: ReferenceError
+// Explanation: x is in TDZ on the right side; can't access before initialization
+
+14. Hoisting with function declarations vs expressions
+javascriptfoo();
+bar();
+
+function foo() {
+  console.log('foo');
+}
+
+var bar = function() {
+  console.log('bar');
+};
+// Answer: "foo", then TypeError
+// Explanation: Function declarations are hoisted entirely, but var bar is undefined when called
+
+15. Async function return value
+javascriptasync function getData() {
+  return 'data';
+}
+console.log(getData());
+// Answer: Promise { 'data' }
+// Explanation: async functions always return a Promise
+
+16. Promise.all with rejection
+javascriptPromise.all([
+  Promise.resolve(1),
+  Promise.reject('error'),
+  Promise.resolve(3)
+])
+.then(console.log)
+.catch(console.log);
+// Answer: "error"
+// Explanation: Promise.all rejects immediately when any promise rejects
+
+17. Tricky async execution
+javascriptasync function async1() {
+  console.log('1');
+  await async2();
+  console.log('2');
+}
+
+async function async2() {
+  console.log('3');
+}
+
+console.log('4');
+setTimeout(() => console.log('5'), 0);
+async1();
+new Promise(resolve => {
+  console.log('6');
+  resolve();
+}).then(() => console.log('7'));
+console.log('8');
+// Answer: 4, 1, 3, 6, 8, 2, 7, 5
+// Explanation: 
+// - Sync: 4, async1 starts (1), async2 (3), Promise executor (6), sync end (8)
+// - Microtasks: async1 resumes (2), promise.then (7)
+// - Macrotask: setTimeout (5)
+
+18. const in TDZ
+javascriptfunction test() {
+  const func = () => console.log(value);
+  func();
+  const value = 'hello';
+}
+test();
+// Answer: ReferenceError
+// Explanation: value is in TDZ when func() executes
+
+19. Multiple awaits
+javascriptasync function test() {
+  const p1 = Promise.resolve(1);
+  const p2 = Promise.resolve(2);
+  
+  console.log(await p1 + await p2);
+}
+test();
+// Answer: 3
+// Explanation: Both promises resolve immediately, 1 + 2 = 3
+
+20. Class hoisting
+javascriptconst instance = new MyClass();
+
+class MyClass {
+  constructor() {
+    console.log('created');
+  }
+}
+// Answer: ReferenceError
+// Explanation: Classes are NOT hoisted like function declarations; they're in TDZ
+
+21. Promise constructor execution
+javascriptconst promise = new Promise((resolve) => {
+  console.log('1');
+  resolve();
+  console.log('2');
+});
+promise.then(() => console.log('3'));
+console.log('4');
+// Answer: 1, 2, 4, 3
+// Explanation: Promise executor runs immediately and synchronously, .then is microtask
+
+22. Async IIFE
+javascript(async () => {
+  console.log('1');
+  await Promise.resolve();
+  console.log('2');
+})();
+console.log('3');
+// Answer: 1, 3, 2
+// Explanation: IIFE starts (1), await yields (3 runs), microtask (2)
+
+23. Closure
+function outer() {
+  let count = 0;
+  return function() {
+    return ++count;
+  };
+}
+
+const fn1 = outer();
+const fn2 = outer();
+
+console.log(fn1());
+console.log(fn1());
+console.log(fn2());
+
+1
+2
+1
+
+// fn1 and fn2 will have different closures.
+
+
+24. const obj = {
+  name: "Vishal",
+  getName() {
+    return () => {
+      console.log(this.name);
+    };
+  }
+};
+
+obj.getName()();
+
+// Vishal
+
+const obj = {
+  name: "Vishal",
+  getName() {
+    return function() {
+      console.log(this.name);
+    };
+  }
+};
+
+obj.getName()();
+
+// undefined
+
+
+25.
+function Person(name) {
+  this.name = name;
+}
+
+const p = Person("Vishal");
+console.log(window.name);
+
+//Vishal
+
+Because called without new → this = window.
